@@ -1,10 +1,12 @@
-package com.example.hyu13.weatherapp;
+package com.example.hyu13.weatherapp.UI;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
+
+import com.example.hyu13.weatherapp.R;
 
 public class AlertDialogFragment extends DialogFragment {
     @Override

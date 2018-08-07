@@ -1,18 +1,12 @@
-package com.example.hyu13.weatherapp;
+package com.example.hyu13.weatherapp.UI;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
@@ -22,8 +16,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hyu13.weatherapp.R;
+import com.example.hyu13.weatherapp.Weather.CurrentWeather;
+import com.example.hyu13.weatherapp.Weather.Forecast;
+import com.example.hyu13.weatherapp.Weather.HourByHour;
 import com.example.hyu13.weatherapp.databinding.ActivityMainBinding;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,12 +33,11 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.internal.tls.OkHostnameVerifier;
 
 public class MainActivity extends AppCompatActivity{
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    private CurrentWeather currentWeather;
+    private Forecast mForecast;
     private ImageView icon; //in app weather icon
     private LocationManager mLocationManager;
 
@@ -71,11 +69,11 @@ public class MainActivity extends AppCompatActivity{
         double latitude = location.getLatitude();
         */
 
-        getForcast(latitude, longitude);
+        getForecast(latitude, longitude);
         Log.d(TAG, "Main UI running");
     }
 
-    private void getForcast(double latitude, double longitude) {
+    private void getForecast(double latitude, double longitude) {
         final ActivityMainBinding binding = DataBindingUtil.setContentView(MainActivity.this, R.layout.activity_main);
 
         TextView darkSky = findViewById(R.id.darkSky);
@@ -85,13 +83,13 @@ public class MainActivity extends AppCompatActivity{
 
         String apiKey = "5aa13f2fbcb46935d05b2d6f01e73c44";
 
-        String forcastURL = "https://api.darksky.net/forecast/"
+        String forecastURL = "https://api.darksky.net/forecast/"
                 + apiKey + "/" + latitude + "," + longitude;
 
         if(isNetworkAvailable()) {
             OkHttpClient client = new OkHttpClient();
 
-            Request request = new Request.Builder().url(forcastURL).build();
+            Request request = new Request.Builder().url(forecastURL).build();
 
             Call call = client.newCall(request);
             call.enqueue(new Callback() {   //executes asynchronous by queue provided by OkHttp
@@ -106,7 +104,9 @@ public class MainActivity extends AppCompatActivity{
                        String jsonData = response.body().string();
                         Log.v(TAG, jsonData);
                         if (response.isSuccessful()) {
-                            currentWeather = getCurrentDetails(jsonData);
+                            mForecast = parseForeCastData(jsonData);
+
+                            CurrentWeather currentWeather = mForecast.getCurrentWeather();
 
                             final CurrentWeather displayWeather = new CurrentWeather(
                                     currentWeather.getLocationLabel(),
@@ -142,6 +142,40 @@ public class MainActivity extends AppCompatActivity{
                     }
                 });
             }
+    }
+
+    private Forecast parseForeCastData(String jsonData) throws JSONException {
+        Forecast forecast = new Forecast();
+
+        forecast.setCurrentWeather(getCurrentDetails(jsonData));
+        forecast.setHourlyForecast(getHourlyForecast(jsonData));
+
+        return forecast;
+    }
+
+    //Connecting JSON array with Arrays in Java
+    private HourByHour[] getHourlyForecast(String jsonData) throws JSONException {
+        JSONObject forecast = new JSONObject(jsonData);
+        String timezone = forecast.getString("timezone");
+
+        JSONObject hourly = forecast.getJSONObject("hourly");
+        JSONArray data = hourly.getJSONArray("data");
+
+        HourByHour[] hours = new HourByHour[data.length()];
+        for(int i = 0; i<data.length(); i++){
+            JSONObject jsonHour = data.getJSONObject(i);
+
+            HourByHour hourByHour = new HourByHour();
+
+            hourByHour.setSummary(jsonHour.getString("summary"));
+            hourByHour.setIcon(jsonHour.getString("icon"));
+            hourByHour.setTemperature(jsonHour.getDouble("temperature"));
+            hourByHour.setTime(jsonHour.getLong("time"));
+            hourByHour.setTimezone(timezone);
+
+            hours[i]= hourByHour;
+        }
+        return hours;
     }
 
     private CurrentWeather getCurrentDetails(String jsonData) throws JSONException{ // moves tries catch to currentWeather = getCurrentDetails(jsonData);
@@ -189,10 +223,15 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void refreshOnClick(View view){ //image to button, add this to image view android:onClick="refreshOnClick"
-        Toast.makeText(this, "Refreshing data", Toast.LENGTH_LONG);
-        getForcast(latitude, longitude);
+        getForecast(latitude, longitude);
+        Toast.makeText(this, "Refreshing data", Toast.LENGTH_LONG).show();
     }
 
+    public void hourlyOnClick(View view){
+        Intent intent = new Intent(this, HourlyForecast.class);
+        startActivity(intent);
+
+    }
     /*
     @Override
     public void onLocationChanged(Location location) {

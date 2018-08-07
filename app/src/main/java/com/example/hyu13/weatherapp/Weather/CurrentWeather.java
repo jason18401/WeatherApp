@@ -1,4 +1,6 @@
-package com.example.hyu13.weatherapp;
+package com.example.hyu13.weatherapp.Weather;
+
+import com.example.hyu13.weatherapp.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

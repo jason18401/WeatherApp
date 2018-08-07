@@ -5,4 +5,5 @@
     <string name="error_button_ok_text">OK</string>
     <string name="network_offline_message">Network is OFFLINE</string>
     <string name="darkSkyMessage"><a href="https://darksky.net/poweredby">Powered by Dark Sky</a></string>
+    <string name="title_activity_hourly_forecast">HourlyForecast</string>
 </resources>
