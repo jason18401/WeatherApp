@@ -22,15 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".UI.HourlyForecast"
-            android:label="@string/title_activity_hourly_forecast"
-            android:parentActivityName=".UI.MainActivity"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.hyu13.weatherapp.UI.MainActivity" />
-        </activity>
+        <activity android:name=".UI.HourlyActivity"></activity>
     </application>
 
 </manifest>

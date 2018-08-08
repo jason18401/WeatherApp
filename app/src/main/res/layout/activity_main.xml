@@ -167,18 +167,18 @@
         android:id="@+id/summaryValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="@{weather.summary, default = `Chance of rain`}"
         android:textColor="@android:color/white"
         android:textSize="18dp"
-        app:layout_constraintBottom_toTopOf="@+id/darkSky"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/humidityValue" />
 
     <TextView
         android:id="@+id/darkSky"
@@ -221,16 +221,18 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:background="#40ffffff"
+        android:background="@drawable/rounded_button"
+        android:onClick="hourlyOnClick"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:text="HOURLY FORECAST"
-        android:onClick="hourlyOnClick"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/darkSky"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/summaryValue" />
+        app:layout_constraintTop_toBottomOf="@+id/summaryValue"
+        app:layout_constraintVertical_bias="0.648" />
 
 </android.support.constraint.ConstraintLayout>
 </layout>
